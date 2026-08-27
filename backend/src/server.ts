@@ -9,10 +9,8 @@ const startServer = async () => {
     // 1. Connect to Database
     await connectDatabase();
 
-    // 2. Seed initial demo dataset if running in development
-    if (env.isDevelopment) {
-      await seedDemoData();
-    }
+    // 2. Seed initial demo dataset (idempotent - creates demo user on fresh DBs)
+    await seedDemoData();
 
     // 3. Start HTTP Server
     const server = app.listen(env.PORT, () => {
