@@ -8,13 +8,13 @@ export const connectDatabase = async (): Promise<void> => {
   try {
     mongoose.set('strictQuery', true);
 
-    // Attempt primary connection with 3000ms timeout
+    // Attempt primary connection with 5000ms timeout
     const options: mongoose.ConnectOptions = {
-      serverSelectionTimeoutMS: 3000,
-      connectTimeoutMS: 3000,
+      serverSelectionTimeoutMS: 5000,
+      connectTimeoutMS: 5000,
     };
 
-    logger.info(`Attempting MongoDB connection to: ${env.MONGODB_URI}`);
+    logger.info(`Attempting MongoDB connection to: ${env.MONGODB_URI.replace(/:([^:@]+)@/, ':****@')}`);
     await mongoose.connect(env.MONGODB_URI, options);
     logger.info('✅ Successfully connected to MongoDB database.');
   } catch (err: any) {
@@ -24,7 +24,9 @@ export const connectDatabase = async (): Promise<void> => {
       );
 
       try {
-        const { MongoMemoryServer } = await import('mongodb-memory-server');
+        // Load in development mode without triggering TypeScript compile-time module resolution
+        const memModule = (eval('require') as any)('mongodb-memory-server');
+        const MongoMemoryServer = memModule.MongoMemoryServer;
         memoryServer = await MongoMemoryServer.create();
         const memoryUri = memoryServer.getUri();
 
