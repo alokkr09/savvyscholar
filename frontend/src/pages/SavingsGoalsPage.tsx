@@ -444,8 +444,8 @@ export const SavingsGoalsPage: React.FC = () => {
             <Input
               label="Target Amount (₹) *"
               type="number"
-              min="1"
-              step="100"
+              min="0.01"
+              step="any"
               placeholder="e.g. 60000"
               prefixText="₹"
               value={targetAmount}
@@ -456,7 +456,7 @@ export const SavingsGoalsPage: React.FC = () => {
               label="Initial Amount Saved (₹)"
               type="number"
               min="0"
-              step="100"
+              step="any"
               placeholder="0"
               prefixText="₹"
               value={currentAmount}
@@ -525,8 +525,8 @@ export const SavingsGoalsPage: React.FC = () => {
           <Input
             label={`Amount to ${transactType === 'deposit' ? 'Deposit' : 'Withdraw'} (₹) *`}
             type="number"
-            min="1"
-            step="50"
+            min="0.01"
+            step="any"
             placeholder="e.g. 2000"
             prefixText="₹"
             value={transactAmount}

@@ -367,7 +367,7 @@ export const BudgetsPage: React.FC = () => {
             label="Monthly Limit (₹) *"
             type="number"
             min="1"
-            step="100"
+            step="any"
             placeholder="e.g. 5000"
             prefixText="₹"
             value={modalAmount}
@@ -378,9 +378,9 @@ export const BudgetsPage: React.FC = () => {
           <Input
             label="Alert Threshold (%)"
             type="number"
-            min="10"
+            min="1"
             max="100"
-            step="5"
+            step="1"
             value={modalThreshold}
             onChange={(e) => setModalThreshold(e.target.value)}
             helperText="We will alert you when you reach this percentage of your budget"

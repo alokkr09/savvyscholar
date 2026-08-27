@@ -291,8 +291,8 @@ export const EmergencyFundPage: React.FC = () => {
           <Input
             label="Contribution Amount (₹) *"
             type="number"
-            min="1"
-            step="100"
+            min="0.01"
+            step="any"
             placeholder="e.g. 5000"
             prefixText="₹"
             value={contributionAmount}
@@ -356,7 +356,7 @@ export const EmergencyFundPage: React.FC = () => {
               label="Monthly Living Expense Baseline (₹)"
               type="number"
               min="0"
-              step="500"
+              step="any"
               placeholder={`e.g. ${fund.effectiveMonthlyExpense}`}
               prefixText="₹"
               value={monthlyExpenseBaseline}
@@ -372,7 +372,7 @@ export const EmergencyFundPage: React.FC = () => {
               label="Target Fund Goal (₹)"
               type="number"
               min="0"
-              step="1000"
+              step="any"
               placeholder="e.g. 60000"
               prefixText="₹"
               value={customTarget}
@@ -384,7 +384,7 @@ export const EmergencyFundPage: React.FC = () => {
             label="Target Monthly Contribution (₹)"
             type="number"
             min="0"
-            step="500"
+            step="any"
             placeholder="e.g. 5000"
             prefixText="₹"
             value={monthlyContribution}

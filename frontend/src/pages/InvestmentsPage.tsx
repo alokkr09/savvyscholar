@@ -400,8 +400,8 @@ export const InvestmentsPage: React.FC = () => {
             <Input
               label="Invested Amount (₹) *"
               type="number"
-              min="1"
-              step="100"
+              min="0.01"
+              step="any"
               placeholder="e.g. 10000"
               prefixText="₹"
               value={investedAmount}
@@ -412,7 +412,7 @@ export const InvestmentsPage: React.FC = () => {
               label="Current Valuation (₹) *"
               type="number"
               min="0"
-              step="100"
+              step="any"
               placeholder="e.g. 12500"
               prefixText="₹"
               value={currentValue}

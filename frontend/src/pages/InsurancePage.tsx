@@ -424,7 +424,7 @@ export const InsurancePage: React.FC = () => {
               label="Coverage Amount (₹) *"
               type="number"
               min="0"
-              step="5000"
+              step="any"
               placeholder="e.g. 500000"
               prefixText="₹"
               value={coverageAmount}
@@ -435,7 +435,7 @@ export const InsurancePage: React.FC = () => {
               label="Premium (₹) *"
               type="number"
               min="0"
-              step="100"
+              step="any"
               placeholder="e.g. 3500"
               prefixText="₹"
               value={premiumAmount}

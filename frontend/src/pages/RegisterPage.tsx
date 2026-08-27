@@ -150,7 +150,7 @@ export const RegisterPage: React.FC = () => {
               label="Estimated Monthly Income / Pocket Money (₹)"
               type="number"
               min="0"
-              step="500"
+              step="any"
               placeholder="e.g. 15000 (Stipend, allowance, part-time)"
               prefixText="₹"
               value={monthlyIncome}

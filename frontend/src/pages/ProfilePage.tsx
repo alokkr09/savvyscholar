@@ -146,7 +146,7 @@ export const ProfilePage: React.FC = () => {
               label="Estimated Monthly Income / Pocket Money (₹)"
               type="number"
               min="0"
-              step="500"
+              step="any"
               prefixText="₹"
               value={monthlyIncome}
               onChange={(e) => setMonthlyIncome(e.target.value)}
