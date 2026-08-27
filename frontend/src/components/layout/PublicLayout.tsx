@@ -1,9 +1,12 @@
 import React from 'react';
 import { Link, Outlet } from 'react-router-dom';
-import { Sparkles, ArrowRight } from 'lucide-react';
+import { Sparkles, ArrowRight, LayoutDashboard, LogOut } from 'lucide-react';
 import { Button } from '../common/Button';
+import { useAuth } from '../../context/AuthContext';
 
 export const PublicLayout: React.FC = () => {
+  const { isAuthenticated, user, logout } = useAuth();
+
   return (
     <div className="min-h-screen flex flex-col bg-slate-50">
       {/* Top Navbar */}
@@ -24,21 +27,50 @@ export const PublicLayout: React.FC = () => {
           </Link>
 
           <nav className="flex items-center gap-3 sm:gap-4">
-            <Link to="/login">
-              <Button variant="ghost" size="md">
-                Sign In
-              </Button>
-            </Link>
-            <Link to="/register">
-              <Button
-                variant="brand"
-                size="md"
-                rightIcon={<ArrowRight className="w-4 h-4" />}
-                className="shadow-md shadow-emerald-600/20"
-              >
-                Get Started Free
-              </Button>
-            </Link>
+            {isAuthenticated ? (
+              <div className="flex items-center gap-3">
+                <span className="hidden md:inline-block text-xs font-semibold text-slate-600">
+                  Signed in as <strong className="text-slate-900">{user?.name}</strong>
+                </span>
+                <Link to="/dashboard">
+                  <Button
+                    variant="brand"
+                    size="md"
+                    leftIcon={<LayoutDashboard className="w-4 h-4" />}
+                    className="shadow-md shadow-emerald-600/20 font-bold"
+                  >
+                    Open Dashboard
+                  </Button>
+                </Link>
+                <Button
+                  variant="ghost"
+                  size="md"
+                  onClick={logout}
+                  leftIcon={<LogOut className="w-4 h-4 text-rose-500" />}
+                  className="text-xs text-slate-600 hover:text-rose-600"
+                >
+                  Sign Out
+                </Button>
+              </div>
+            ) : (
+              <>
+                <Link to="/login">
+                  <Button variant="ghost" size="md">
+                    Sign In
+                  </Button>
+                </Link>
+                <Link to="/register">
+                  <Button
+                    variant="brand"
+                    size="md"
+                    rightIcon={<ArrowRight className="w-4 h-4" />}
+                    className="shadow-md shadow-emerald-600/20"
+                  >
+                    Get Started Free
+                  </Button>
+                </Link>
+              </>
+            )}
           </nav>
         </div>
       </header>

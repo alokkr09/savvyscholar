@@ -1,12 +1,12 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { ToastProvider } from './context/ToastContext';
 import { AuthProvider } from './context/AuthContext';
 
 // Layouts & Route Guards
 import { AppLayout } from './components/layout/AppLayout';
 import { PublicLayout } from './components/layout/PublicLayout';
-import { ProtectedRoute, PublicOnlyRoute } from './components/common/ProtectedRoute';
+import { ProtectedRoute } from './components/common/ProtectedRoute';
 
 // Pages
 import { LandingPage } from './pages/LandingPage';
@@ -34,11 +34,9 @@ export const App: React.FC = () => {
               <Route path="/" element={<LandingPage />} />
             </Route>
 
-            {/* Guest-Only Auth Routes */}
-            <Route element={<PublicOnlyRoute />}>
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/register" element={<RegisterPage />} />
-            </Route>
+            {/* Direct Auth Routes (accessible even if previously logged in, allowing account creation) */}
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
 
             {/* Authenticated Dashboard & Feature Routes */}
             <Route element={<ProtectedRoute />}>

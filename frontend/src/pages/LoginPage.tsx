@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { Sparkles, Mail, Lock, Eye, EyeOff, ArrowRight } from 'lucide-react';
+import { Sparkles, Mail, Lock, Eye, EyeOff, ArrowRight, Info, LogOut } from 'lucide-react';
 import { Input } from '../components/common/Input';
 import { Button } from '../components/common/Button';
 import { useAuth } from '../context/AuthContext';
@@ -11,7 +11,7 @@ export const LoginPage: React.FC = () => {
   const [searchParams] = useSearchParams();
   const isExpired = searchParams.get('expired') === 'true';
 
-  const { login } = useAuth();
+  const { user, isAuthenticated, logout, login } = useAuth();
   const { error: toastError, info } = useToast();
 
   const [email, setEmail] = useState('');
@@ -44,7 +44,7 @@ export const LoginPage: React.FC = () => {
 
     try {
       setIsLoading(true);
-      await login({ email: email.trim(), password });
+      await login({ email: email.trim().toLowerCase(), password });
       navigate('/dashboard');
     } catch {
       // Error handled by AuthContext toast
@@ -62,7 +62,6 @@ export const LoginPage: React.FC = () => {
       });
       navigate('/dashboard');
     } catch {
-      // Fallback: fill inputs for user
       setEmail('scholar.demo@savvyscholar.io');
       setPassword('Password123');
       toastError('Demo Account', 'Click "Sign In" or create a fresh account below.');
@@ -72,8 +71,8 @@ export const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="flex-1 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-slate-50">
-      <div className="max-w-md w-full space-y-6">
+    <div className="min-h-screen flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 bg-slate-50">
+      <div className="max-w-md w-full mx-auto space-y-6">
         {/* Logo & Header */}
         <div className="text-center">
           <Link to="/" className="inline-flex items-center gap-2.5 group mb-4">
@@ -89,6 +88,34 @@ export const LoginPage: React.FC = () => {
             Sign in to manage your budget, savings, and investments
           </p>
         </div>
+
+        {/* Existing Session Alert */}
+        {isAuthenticated && user && (
+          <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 text-xs flex items-center justify-between gap-3 shadow-sm">
+            <div className="flex items-center gap-2">
+              <Info className="w-4 h-4 text-amber-600 shrink-0" />
+              <span>
+                Signed in as <strong>{user.name}</strong> ({user.email}).
+              </span>
+            </div>
+            <div className="flex items-center gap-1.5 shrink-0">
+              <button
+                type="button"
+                onClick={() => navigate('/dashboard')}
+                className="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 font-bold text-white text-[11px]"
+              >
+                Dashboard
+              </button>
+              <button
+                type="button"
+                onClick={logout}
+                className="px-2.5 py-1 rounded-lg bg-amber-200 hover:bg-amber-300 font-bold text-amber-900 text-[11px]"
+              >
+                Log Out
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Auth Form Card */}
         <div className="bg-white rounded-3xl p-7 border border-slate-200/80 shadow-fintech-card space-y-5">
@@ -115,7 +142,7 @@ export const LoginPage: React.FC = () => {
             <Input
               label="Email Address"
               type="email"
-              placeholder="alok@college.edu"
+              placeholder="e.g. alok@college.edu"
               leftIcon={<Mail className="w-4 h-4" />}
               value={email}
               onChange={(e) => setEmail(e.target.value)}

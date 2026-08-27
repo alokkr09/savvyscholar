@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Sparkles, Mail, Lock, User, Eye, EyeOff, ArrowRight } from 'lucide-react';
+import { Sparkles, Mail, Lock, User, Eye, EyeOff, ArrowRight, LogOut, Info } from 'lucide-react';
 import { Input } from '../components/common/Input';
 import { Button } from '../components/common/Button';
 import { useAuth } from '../context/AuthContext';
 
 export const RegisterPage: React.FC = () => {
   const navigate = useNavigate();
-  const { register } = useAuth();
+  const { user, isAuthenticated, logout, register } = useAuth();
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -27,8 +27,6 @@ export const RegisterPage: React.FC = () => {
     }
     if (!password || password.length < 6) {
       newErrors.password = 'Password must be at least 6 characters long';
-    } else if (!/(?=.*[A-Za-z])(?=.*\d)/.test(password)) {
-      newErrors.password = 'Password must include at least one letter and one number';
     }
     if (monthlyIncome && (isNaN(Number(monthlyIncome)) || Number(monthlyIncome) < 0)) {
       newErrors.monthlyIncome = 'Monthly income cannot be negative';
@@ -46,7 +44,7 @@ export const RegisterPage: React.FC = () => {
       setIsLoading(true);
       await register({
         name: name.trim(),
-        email: email.trim(),
+        email: email.trim().toLowerCase(),
         password,
         monthlyIncome: monthlyIncome ? Number(monthlyIncome) : 0,
         currency: 'INR',
@@ -60,8 +58,8 @@ export const RegisterPage: React.FC = () => {
   };
 
   return (
-    <div className="flex-1 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-slate-50">
-      <div className="max-w-md w-full space-y-6">
+    <div className="min-h-screen flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 bg-slate-50">
+      <div className="max-w-md w-full mx-auto space-y-6">
         {/* Header */}
         <div className="text-center">
           <Link to="/" className="inline-flex items-center gap-2.5 group mb-4">
@@ -80,12 +78,32 @@ export const RegisterPage: React.FC = () => {
           </p>
         </div>
 
+        {/* Existing Session Alert */}
+        {isAuthenticated && user && (
+          <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 text-xs flex items-center justify-between gap-3 shadow-sm">
+            <div className="flex items-center gap-2">
+              <Info className="w-4 h-4 text-amber-600 shrink-0" />
+              <span>
+                Currently logged in as <strong>{user.name}</strong> ({user.email}).
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={logout}
+              className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-amber-200 hover:bg-amber-300 font-bold text-amber-900 text-[11px] transition-colors shrink-0"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              <span>Log Out First</span>
+            </button>
+          </div>
+        )}
+
         {/* Form Card */}
         <div className="bg-white rounded-3xl p-7 border border-slate-200/80 shadow-fintech-card">
           <form onSubmit={handleSubmit} className="space-y-4">
             <Input
               label="Full Name *"
-              placeholder="Alok Kumar"
+              placeholder="e.g. Alok Kumar"
               leftIcon={<User className="w-4 h-4" />}
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -96,7 +114,7 @@ export const RegisterPage: React.FC = () => {
             <Input
               label="Email Address *"
               type="email"
-              placeholder="alok@college.edu"
+              placeholder="e.g. alok@college.edu"
               leftIcon={<Mail className="w-4 h-4" />}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -108,7 +126,7 @@ export const RegisterPage: React.FC = () => {
               <Input
                 label="Password *"
                 type={showPassword ? 'text' : 'password'}
-                placeholder="At least 6 chars with letters & numbers"
+                placeholder="At least 6 characters"
                 leftIcon={<Lock className="w-4 h-4" />}
                 rightIcon={
                   <button
@@ -124,7 +142,7 @@ export const RegisterPage: React.FC = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 error={errors.password}
                 autoComplete="new-password"
-                helperText="Must contain at least 6 characters with a letter and a digit"
+                helperText="Minimum 6 characters"
               />
             </div>
 
@@ -138,7 +156,7 @@ export const RegisterPage: React.FC = () => {
               value={monthlyIncome}
               onChange={(e) => setMonthlyIncome(e.target.value)}
               error={errors.monthlyIncome}
-              helperText="Optional baseline to calculate your monthly savings rate"
+              helperText="Baseline to calculate your monthly savings rate (can be adjusted later)"
             />
 
             <Button
