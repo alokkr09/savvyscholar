@@ -8,9 +8,7 @@ import {
   TrendingUp,
   Umbrella,
   Plus,
-  ArrowUpRight,
   ArrowRight,
-  Sparkles,
   AlertCircle,
   CheckCircle2,
   Info,
@@ -27,19 +25,26 @@ import { Card } from '../components/common/Card';
 import { Button } from '../components/common/Button';
 import { ProgressBar } from '../components/common/ProgressBar';
 import { CategoryBadge } from '../components/common/Badge';
-import { CardSkeleton, Spinner } from '../components/common/Loader';
+import { CardSkeleton } from '../components/common/Loader';
 import { EmptyState } from '../components/common/EmptyState';
+import { ExpenseModal } from '../components/expenses/ExpenseModal';
 import { dashboardApi } from '../services/dashboardApi';
+import { expenseApi } from '../services/expenseApi';
 import { DashboardData } from '../types/dashboard.types';
+import { CreateExpensePayload } from '../types/expense.types';
 import { formatINR } from '../utils/currency';
 import { formatDate } from '../utils/dates';
 import { CATEGORY_COLORS } from '../utils/constants';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 
 export const DashboardPage: React.FC = () => {
   const { user } = useAuth();
+  const { success, error } = useToast();
+
   const [data, setData] = useState<DashboardData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isExpenseModalOpen, setIsExpenseModalOpen] = useState(false);
 
   const fetchDashboard = useCallback(async () => {
     try {
@@ -65,6 +70,17 @@ export const DashboardPage: React.FC = () => {
       window.removeEventListener('savvyscholar:expense_created', handleExpenseCreated);
     };
   }, [fetchDashboard]);
+
+  const handleSaveExpense = async (payload: CreateExpensePayload) => {
+    try {
+      await expenseApi.create(payload);
+      success('Expense Recorded', `Added ₹${payload.amount} for "${payload.title}"`);
+      setIsExpenseModalOpen(false);
+      fetchDashboard();
+    } catch (err: any) {
+      error('Save Failed', err.message || 'Could not record expense');
+    }
+  };
 
   if (isLoading) {
     return (
@@ -200,11 +216,22 @@ export const DashboardPage: React.FC = () => {
             title="Spending by Category"
             subtitle={`Distribution of ₹${data.currentMonth.totalSpent.toLocaleString('en-IN')} spent this month`}
             action={
-              <Link to="/expenses">
-                <Button variant="ghost" size="sm" rightIcon={<ArrowRight className="w-4 h-4" />}>
-                  View All
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  leftIcon={<Plus className="w-3.5 h-3.5 text-emerald-600" />}
+                  onClick={() => setIsExpenseModalOpen(true)}
+                  className="font-bold text-xs"
+                >
+                  Add Expense
                 </Button>
-              </Link>
+                <Link to="/expenses">
+                  <Button variant="ghost" size="sm" rightIcon={<ArrowRight className="w-4 h-4" />}>
+                    View All
+                  </Button>
+                </Link>
+              </div>
             }
           >
             {data.categorySpending.length === 0 ? (
@@ -213,7 +240,7 @@ export const DashboardPage: React.FC = () => {
                 title="No expenses logged this month"
                 description="Start recording your canteen meals, travel, and textbooks to unlock spending breakdowns."
                 actionText="Add First Expense"
-                onAction={() => window.dispatchEvent(new CustomEvent('savvyscholar:expense_created'))}
+                onAction={() => setIsExpenseModalOpen(true)}
               />
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center pt-2">
@@ -283,9 +310,18 @@ export const DashboardPage: React.FC = () => {
             }
           >
             {data.recentTransactions.length === 0 ? (
-              <p className="text-xs text-slate-500 py-4 text-center">
-                No recent transactions recorded.
-              </p>
+              <div className="py-6 text-center">
+                <p className="text-xs text-slate-500 mb-3">No recent transactions recorded.</p>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  leftIcon={<Plus className="w-3.5 h-3.5 text-emerald-600" />}
+                  onClick={() => setIsExpenseModalOpen(true)}
+                  className="font-bold text-xs"
+                >
+                  Record Your First Transaction
+                </Button>
+              </div>
             ) : (
               <div className="divide-y divide-slate-100">
                 {data.recentTransactions.map((tx) => (
@@ -439,6 +475,14 @@ export const DashboardPage: React.FC = () => {
           </Card>
         </div>
       </div>
+
+      {/* Embedded Expense Modal for instant interactive addition */}
+      <ExpenseModal
+        isOpen={isExpenseModalOpen}
+        mode="create"
+        onClose={() => setIsExpenseModalOpen(false)}
+        onSubmit={handleSaveExpense}
+      />
     </div>
   );
 };
