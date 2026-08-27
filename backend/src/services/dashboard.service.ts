@@ -84,7 +84,7 @@ export class DashboardService {
     // Investment Metrics
     let totalInvested = 0;
     let totalCurrentPortfolio = 0;
-    investments.forEach((inv) => {
+    investments.forEach((inv: any) => {
       totalInvested = MoneyMath.add(totalInvested, inv.investedAmount || 0);
       totalCurrentPortfolio = MoneyMath.add(totalCurrentPortfolio, inv.currentValue || 0);
     });
@@ -94,14 +94,14 @@ export class DashboardService {
 
     // Budget Utilization Metrics
     let totalBudgetAllocated = 0;
-    budgets.forEach((b) => {
+    budgets.forEach((b: any) => {
       totalBudgetAllocated = MoneyMath.add(totalBudgetAllocated, b.amount || 0);
     });
     const budgetUtilizationPercentage =
       totalBudgetAllocated > 0 ? MoneyMath.percentage(currentMonthSpend, totalBudgetAllocated) : 0;
 
     // Goals Progress Computation
-    const enrichedGoals = goals.map((g) => {
+    const enrichedGoals = goals.map((g: any) => {
       const target = MoneyMath.round(g.targetAmount);
       const current = MoneyMath.round(g.currentAmount);
       return {
@@ -115,7 +115,7 @@ export class DashboardService {
     });
 
     // Category Spending Chart Items
-    const categorySpending = topCategoriesAgg.map((cat) => ({
+    const categorySpending = topCategoriesAgg.map((cat: any) => ({
       category: cat._id,
       amount: MoneyMath.round(cat.total),
       percentage: currentMonthSpend > 0 ? MoneyMath.percentage(cat.total, currentMonthSpend) : 0,
@@ -172,7 +172,7 @@ export class DashboardService {
     }
 
     // Check insurance renewal soon
-    const expiringPolicies = policies.filter((p) => {
+    const expiringPolicies = policies.filter((p: any) => {
       const diff = new Date(p.renewalDate).getTime() - now.getTime();
       const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
       return days >= 0 && days <= 30;
