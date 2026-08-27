@@ -11,11 +11,14 @@ import { ApiResponse } from './utils/apiResponse';
 
 const app: Application = express();
 
-// Security middleware with relaxed CSP for all-in-one frontend serving
+// Security middleware with relaxed policies for all-in-one frontend serving & Safari compatibility
 app.use(
   helmet({
     contentSecurityPolicy: false,
     crossOriginEmbedderPolicy: false,
+    crossOriginResourcePolicy: false,
+    crossOriginOpenerPolicy: false,
+    originAgentCluster: false,
   })
 );
 
@@ -104,9 +107,9 @@ const candidatePaths = [
 const frontendDistPath = candidatePaths.find((p) => fs.existsSync(p));
 
 if (frontendDistPath) {
-  app.use(express.static(frontendDistPath));
+  app.use(express.static(frontendDistPath, { maxAge: '1h' }));
 
-  // Forward all non-API GET requests to index.html (React Router support)
+  // Forward all non-API GET requests to index.html (React Router SPA support)
   app.get('*', (req: Request, res: Response, next) => {
     if (req.path.startsWith('/api')) {
       return next();
